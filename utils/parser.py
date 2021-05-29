@@ -38,7 +38,9 @@ class JobParser:
 
             vacancies = []
             vacancies.extend([x['id'] for x in response['items']])
-            max_iterate_pages = self.__calculate_max_pages(response.get('pages'))
+            max_iterate_pages = self._calculate_max_pages(
+                response.get('pages')
+            )
 
             tasks = [
                 asyncio.create_task(self.__fetch(
@@ -46,12 +48,17 @@ class JobParser:
                 )) for i in range(1, max_iterate_pages + 1)
             ]
             all_result = await asyncio.gather(*tasks)
-            vacancies.extend([i['id'] for x, y, z in all_result for i in z['items'] if x == 200])
+            vacancies.extend(
+                [
+                    i['id'] for x, y, z in all_result for i in z['items']
+                    if x == 200
+                ]
+            )
             return 200, vacancies
         except (Exception, ClientError):
             return 400, []
 
-    def __calculate_max_pages(self, founded_pages: int) -> int:
+    def _calculate_max_pages(self, founded_pages: int) -> int:
         limit_pages = int(
             self._config.LIMIT_RESULT / self._config.RESULT_PER_PAGE
         )
@@ -82,6 +89,15 @@ class JobParser:
         )
         return code, response
 
+    @staticmethod
+    def transform(body: dict, required_keys: List = None) -> Dict[str, Any]:
+        if not required_keys:
+            return body
+        response = {
+            key: value for key, value in body.items() if key in required_keys
+        }
+        return response
+
     async def __fetch(
             self,
             url: str,
@@ -97,6 +113,6 @@ class JobParser:
                 response = await client.json()
                 finally_url = str(client.url)
         except (ClientSSLError, ClientError):
-            code = 404
+            code = 400
         finally:
             return code, finally_url, response

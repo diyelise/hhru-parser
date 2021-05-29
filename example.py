@@ -28,7 +28,7 @@ async def example_get_vacancies():
 
     # last hour
     start_date = (
-            datetime.now() - timedelta(hours=1)
+        datetime.now() - timedelta(hours=1)
     ).strftime('%Y-%m-%dT%H:%M:%S')
 
     attributes = [
@@ -49,7 +49,10 @@ async def example_extract_vacancies():
     At the last stage, you received a list of vacancies.
     Now you can extract them and get the job bodies
     """
-    vacancies_list = [11111111, 2222222]
+    vacancies_list = [
+        11111111,
+        2222222,
+    ]
     job = JobParser(config=HeadHunterConfig)
     extracted_vacancies = await job.extract_vacancies(
         vacancies_list=vacancies_list
@@ -58,7 +61,7 @@ async def example_extract_vacancies():
     await job.close()
 
 
-def example_transform():
+async def example_transform():
     """Transform received vacancies
 
     You can use your list of required keys
@@ -67,8 +70,30 @@ def example_transform():
     By default, all fields will be returned
     :return:
     """
-    pass
+    vacancies_list = [
+        11111111,
+        2222222,
+    ]
+    _parser = JobParser(config=HeadHunterConfig)
+
+    need_keys = [
+        'id',
+        'area',
+        'experience',
+    ]
+    extracted_vacancies = await _parser.extract_vacancies(
+        vacancies_list=vacancies_list
+    )
+    transformed_data = list(
+        map(
+            lambda p: JobParser.transform(
+                body=p, required_keys=need_keys
+            ), extracted_vacancies
+        )
+    )
+    print(transformed_data)
+    await _parser.close()
 
 
 loop = asyncio.get_event_loop()
-loop.run_until_complete(example_get_vacancies())
+loop.run_until_complete(example_transform())

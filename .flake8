@@ -1,0 +1,9 @@
+[flake8]
+ignore = D203
+exclude =
+    .git,
+    __pycache__,
+    venv/*,
+    tests
+max-line-length = 90
+max-complexity = 6
