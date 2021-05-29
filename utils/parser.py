@@ -104,6 +104,11 @@ class JobParser:
             params: List[tuple] = None
     ) -> Tuple[int, str, Dict[str, Any]]:
 
+        if params:
+            _check_per_page = [x for x, y in params if x == 'per_page']
+            if not _check_per_page:
+                params.append(('per_page', self._config.RESULT_PER_PAGE))
+
         code: int = 404
         response: dict = {}
         finally_url: str = ''
