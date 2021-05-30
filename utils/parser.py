@@ -56,7 +56,7 @@ class JobParser:
             )
             return 200, vacancies
         except (Exception, ClientError):
-            return 400, []
+            return 404, []
 
     def _calculate_max_pages(self, founded_pages: int) -> int:
         limit_pages = int(
@@ -118,6 +118,6 @@ class JobParser:
                 response = await client.json()
                 finally_url = str(client.url)
         except (ClientSSLError, ClientError):
-            code = 400
+            code = 404
         finally:
             return code, finally_url, response
