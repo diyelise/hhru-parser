@@ -1,5 +1,3 @@
-
-
 class HeadHunterConfig(object):
     API_URL: str = 'https://api.hh.ru'
     VACANCIES_URL: str = API_URL + '/vacancies'
